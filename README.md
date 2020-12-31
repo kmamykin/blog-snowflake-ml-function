@@ -70,6 +70,14 @@ Thought: combining SF HTTPS Proxy Service (API Gateway) with the inference plumb
 
 This service does not need API Gateway resources, lambda functions have their own implicit invoke endpoint.
 
+Immutability! invoking the same function with the same parameters should produce the same result. 
+This principle guides us towards the models deployed during the build time, as oppose to dynamically querying model repository for artifacts.
+Runtime dependency of "production grade" inference system on "development grade" model repository. Reliability requirements are different, if a model repository is down and unavailable that should not impact the production inference pipeline.
+Data Scientists should be free to create new versions of the model without fear of breaking anything in production. Every new model instance will be additive and the old models should be available if the client still desires to use that version of the model.
+That means will be many instances of the inference service serving many models with many versions.
+What are the steps to deploy a new model artifact? Flipping status to "Production" in the model repository?
+Or have to re-build/re-deploy the inference service? and/or have to re-define the external function?
+
 ### Snowflake Proxy Service 
 
 API Gateway to receive calls from Snowflake and invoke the Inference Service. 
