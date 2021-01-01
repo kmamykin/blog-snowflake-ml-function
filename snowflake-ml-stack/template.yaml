@@ -8,34 +8,33 @@ Description: >
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
-    Timeout: 3
+    Timeout: 60
 
 Resources:
-  HelloWorldFunction:
+  InferenceFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       PackageType: Image
+      #ImageConfig:
+      #  Command: [ "app.lambda_handler" ]
       Events:
-        HelloWorld:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+        PostRequest:
+          Type: HttpApi
           Properties:
-            Path: /hello
-            Method: get
+            Path: /inference
+            Method: POST
     Metadata:
       Dockerfile: Dockerfile
-      DockerContext: ./hello_world
-      DockerTag: python3.8-v1
+      DockerContext: ./inference_service
+      DockerTag: v1
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  HelloWorldApi:
-    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-  HelloWorldFunction:
-    Description: "Hello World Lambda Function ARN"
-    Value: !GetAtt HelloWorldFunction.Arn
-  HelloWorldFunctionIamRole:
-    Description: "Implicit IAM Role created for Hello World function"
-    Value: !GetAtt HelloWorldFunctionRole.Arn
+  InferenceFunctionHttpApi:
+    Description: "API Gateway endpoint URL for Prod stage for the inference function"
+    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/inference/"
+  InferenceFunction:
+    Description: "Inference Function ARN"
+    Value: !GetAtt InferenceFunction.Arn

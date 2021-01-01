@@ -7,4 +7,4 @@ s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1tfzk0ms4cp9b"
 s3_prefix = "snowflake-ml-stack-poc"
 region = "us-east-1"
 capabilities = "CAPABILITY_IAM"
-image_repositories = ["HelloWorldFunction=183626424367.dkr.ecr.us-east-1.amazonaws.com/snowflake-ml-inference"]
+image_repositories = ["InferenceFunction=183626424367.dkr.ecr.us-east-1.amazonaws.com/snowflake-ml-inference"]
