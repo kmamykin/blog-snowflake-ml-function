@@ -5,14 +5,13 @@ Description: >
 
   Sample SAM Template for snowflake-ml-stack
 
-# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
     Timeout: 60
 
 Resources:
   InferenceFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function
     Properties:
       PackageType: Image
       #ImageConfig:
@@ -23,6 +22,7 @@ Resources:
           Properties:
             Path: /inference
             Method: POST
+            PayloadFormatVersion: '2.0' # see https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html for 2.0 payload
     Metadata:
       Dockerfile: Dockerfile
       DockerContext: ./inference_service
