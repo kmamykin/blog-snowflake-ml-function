@@ -112,6 +112,28 @@ For this task I am using the custom Docker image approach. It is a more flexible
 
 At this point we have a deployed model accessible through an HTTP endpoint.
 
+aws ecr create-repository --repository-name snowflake-ml-inference --image-tag-mutability IMMUTABLE --image-scanning-configuration scanOnPush=true
+{
+    "repository": {
+        "repositoryArn": "arn:aws:ecr:us-east-1:183626424367:repository/snowflake-ml-inference",
+        "registryId": "183626424367",
+        "repositoryName": "snowflake-ml-inference",
+        "repositoryUri": "183626424367.dkr.ecr.us-east-1.amazonaws.com/snowflake-ml-inference",
+        "createdAt": "2020-12-31T18:13:27-05:00",
+        "imageTagMutability": "IMMUTABLE",
+        "imageScanningConfiguration": {
+            "scanOnPush": true
+        },
+        "encryptionConfiguration": {
+            "encryptionType": "AES256"
+        }
+    }
+}
+
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 183626424367.dkr.ecr.us-east-1.amazonaws.com
+
+
+
 ## Snowflake external function
 
 ## Processing data and analysis
@@ -130,3 +152,9 @@ https://aws.amazon.com/blogs/compute/using-container-image-support-for-aws-lambd
 
 ## Thoughts
 
+
+### Authentication of AWS CLI with MFA
+https://aws.amazon.com/premiumsupport/knowledge-center/authenticate-mfa-cli/
+```bash
+eval "$(./login.sh ...2FA.code...)"
+```

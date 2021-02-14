@@ -36,6 +36,7 @@ def lambda_handler(event, context):
     return {
         "statusCode": 200,
         "body": json.dumps(
-            [doc_to_ner(doc) for doc in docs]
+            # [doc_to_ner(doc) for doc in docs]
+            "Works"
         ),
     }
