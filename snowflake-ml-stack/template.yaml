@@ -16,6 +16,7 @@ Resources:
       PackageType: Image
       #ImageConfig:
       #  Command: [ "app.lambda_handler" ]
+      MemorySize: 1024
       Events:
         PostRequest:
           Type: HttpApi

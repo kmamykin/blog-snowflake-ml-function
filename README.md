@@ -158,3 +158,10 @@ https://aws.amazon.com/premiumsupport/knowledge-center/authenticate-mfa-cli/
 ```bash
 eval "$(./login.sh ...2FA.code...)"
 ```
+
+### SAM local memory issues
+
+`Max Memory Used` always shows the same size as `Memory Size` - seems to be a problem running locally
+https://github.com/aws/aws-sam-cli/issues/2464
+
+
