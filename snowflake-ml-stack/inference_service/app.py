@@ -1,13 +1,34 @@
 import json
-from pathlib import Path
+import psutil
 
-load_exception = None
-try:
-    import en_core_web_md
-except Exception as err:
-    load_exception = f"{0}".format(err)
-else:
-    load_exception = None
+
+def log_memory_usage(msg: str):
+    print(f"{msg}:{psutil.virtual_memory()}")
+
+
+log_memory_usage("Before import en_core_web_md")
+import en_core_web_md
+log_memory_usage("After import en_core_web_md")
+nlp = en_core_web_md.load()  # Insufficient MemorySize for a lambda function crashes function execution right here!
+log_memory_usage("After NLP model loaded")
+
+
+def _doc_to_output(doc):
+    return {
+        "text": doc.text,
+        "lang": doc.lang_,
+        "lemmas": [token.lemma_ for token in doc if not token.is_stop],
+        'entities': [{
+            'text': ent.text,
+            'start_char': ent.start_char,
+            'end_char': ent.end_char,
+            'label': ent.label_
+        } for ent in doc.ents]
+    }
+
+
+def _process_inputs(texts):
+    return [_doc_to_output(doc) for doc in nlp.pipe(texts, disable=[])]
 
 
 def lambda_handler(event, context):
@@ -25,33 +46,20 @@ def lambda_handler(event, context):
     ------
         Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/http-api-develop-integrations-lambda.html
     """
-    print(f"Started lambda_handler with load_exception::: {load_exception}")
     try:
-        nlp = en_core_web_md.load()  # error here!
-    except:
+        log_memory_usage("Entered lambda_handler")
+        payload = json.loads(event['body']) if event['body'] else []
+        texts = payload if isinstance(payload, list) else [payload]
+        responses = _process_inputs(texts)
+        log_memory_usage("Documents processed")
         return {
             "statusCode": 200,
-            "body": json.dumps({"error": f"Error"}),
+            "body": json.dumps(responses),
         }
-    # def doc_to_ner(doc):
-    #     result = {
-    #         'entities': [{'text': ent.text, 'start_char': ent.start_char, 'end_char': ent.end_char, 'label': ent.label_}
-    #                      for ent in doc.ents]
-    #     }
-    #     return result
-    #
-    # Need to handle isBase64Encoded ?
-    body = "***BODY**" #json.loads(event['body'])
-    print(f"Body:{body}")
-    # Assume the body structure as an array of strings to run NER on
-    # texts = body
-    # docs = [doc for doc in nlp.pipe(texts, disable=["tagger", "parser"])]
-    return {
-        "statusCode": 200,
-        "body": json.dumps(
-            # [doc_to_ner(doc) for doc in docs]
-            {
-                "message": "Hello World",
-            }
-        ),
-    }
+    except Exception as err:
+        return {
+            "statusCode": 500,
+            "body": json.dumps({
+                "errorMessage": f"{err}"
+            }),
+        }

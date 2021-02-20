@@ -14,8 +14,6 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       PackageType: Image
-      #ImageConfig:
-      #  Command: [ "app.lambda_handler" ]
       MemorySize: 1024
       Events:
         PostRequest:
