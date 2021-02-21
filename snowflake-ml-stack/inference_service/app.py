@@ -1,6 +1,6 @@
 import json
 import psutil
-
+import base64
 
 def log_memory_usage(msg: str):
     print(f"{msg}:{psutil.virtual_memory()}")
@@ -48,7 +48,11 @@ def lambda_handler(event, context):
     """
     try:
         log_memory_usage("Entered lambda_handler")
-        payload = json.loads(event['body']) if event['body'] else []
+        print(event['body'])
+        body = base64.b64decode(event['body']) if event['isBase64Encoded'] else event['body']
+        print(body)
+        payload = json.loads(body)
+        print(payload)
         texts = payload if isinstance(payload, list) else [payload]
         responses = _process_inputs(texts)
         log_memory_usage("Documents processed")
